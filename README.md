@@ -56,10 +56,13 @@ services:
     image: gitlab/gitlab-ce:17.11.0-ce.0
     container_name: gitlab
     restart: always
-    hostname: 'gitlab.local'
+    hostname: 'gitlab.example.com'
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://gitlab.local'
+        external_url 'https://gitlab.example.com'
+        letsencrypt['enable'] = true
+        letsencrypt['contact_emails'] = ['admin@example.com']
+        nginx['redirect_http_to_https'] = true
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
     ports:
       - '80:80'
