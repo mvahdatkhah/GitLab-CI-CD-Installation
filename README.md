@@ -272,6 +272,128 @@ echo '/mnt/gitlab/logs /srv/gitlab-docker/logs none bind 0 0' | sudo tee -a /etc
 echo '/mnt/gitlab/backups /srv/gitlab-docker/backups none bind 0 0' | sudo tee -a /etc/fstab
 ```
 
+## ⚙️ Setup LVM with Ansible
+
+### 📁 Save as setup-lvm.yml
+```yaml
+---
+- name: 🚀 Configure LVM and mount volumes for GitLab
+  hosts: gitlab
+  become: true
+
+  vars:  # 🎯 Variable definitions
+    disk_device: /dev/sdb
+    vg_name: gitlab-vg
+    lv_logs:
+      name: gitlab-logs
+      size: 150G
+      mount: /mnt/gitlab/logs
+    lv_backups:
+      name: gitlab-backups
+      size: 50G
+      mount: /mnt/gitlab/backups
+    filesystem_type: ext4
+
+  tasks:
+
+    - name: 📦 Install LVM dependencies
+      tags: [setup, packages]
+      apt:
+        name: lvm2
+        state: present
+        update_cache: true
+
+    - name: 🛠️ Create physical volume
+      tags: [lvm, pv]
+      command: pvcreate {{ disk_device }}
+      args:
+        creates: "/etc/lvm/archive"
+
+    - name: 🧱 Create volume group
+      tags: [lvm, vg]
+      command: vgcreate {{ vg_name }} {{ disk_device }}
+      args:
+        creates: "/dev/{{ vg_name }}"
+
+    - name: 🔧 Create logical volume for logs
+      tags: [lvm, lv, logs]
+      command: lvcreate -L {{ lv_logs.size }} -n {{ lv_logs.name }} {{ vg_name }}
+      args:
+        creates: "/dev/{{ vg_name }}/{{ lv_logs.name }}"
+
+    - name: 🔐 Create logical volume for backups
+      tags: [lvm, lv, backups]
+      command: lvcreate -L {{ lv_backups.size }} -n {{ lv_backups.name }} {{ vg_name }}
+      args:
+        creates: "/dev/{{ vg_name }}/{{ lv_backups.name }}"
+
+    - name: 🧼 Format logs volume
+      tags: [format, logs]
+      filesystem:
+        fstype: "{{ filesystem_type }}"
+        dev: "/dev/{{ vg_name }}/{{ lv_logs.name }}"
+
+    - name: 🧼 Format backups volume
+      tags: [format, backups]
+      filesystem:
+        fstype: "{{ filesystem_type }}"
+        dev: "/dev/{{ vg_name }}/{{ lv_backups.name }}"
+
+    - name: 📂 Create mount directories
+      tags: [mount, directories]
+      file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ lv_logs.mount }}"
+        - "{{ lv_backups.mount }}"
+
+    - name: 📎 Mount logs volume
+      tags: [mount, logs]
+      mount:
+        path: "{{ lv_logs.mount }}"
+        src: "/dev/{{ vg_name }}/{{ lv_logs.name }}"
+        fstype: "{{ filesystem_type }}"
+        opts: defaults
+        state: mounted
+
+    - name: 📎 Mount backups volume
+      tags: [mount, backups]
+      mount:
+        path: "{{ lv_backups.mount }}"
+        src: "/dev/{{ vg_name }}/{{ lv_backups.name }}"
+        fstype: "{{ filesystem_type }}"
+        opts: defaults
+        state: mounted
+
+    - name: 📝 Make logs mount persistent
+      tags: [fstab, logs]
+      mount:
+        path: "{{ lv_logs.mount }}"
+        src: "/dev/{{ vg_name }}/{{ lv_logs.name }}"
+        fstype: "{{ filesystem_type }}"
+        opts: defaults
+        state: present
+
+    - name: 📝 Make backups mount persistent
+      tags: [fstab, backups]
+      mount:
+        path: "{{ lv_backups.mount }}"
+        src: "/dev/{{ vg_name }}/{{ lv_backups.name }}"
+        fstype: "{{ filesystem_type }}"
+        opts: defaults
+        state: present
+```
+
+### 🛠️ Usage
+Run the playbook from your Ansible control node:
+```bash
+ansible-playbook -i inventory setup-lvm.yml
+```
+
+Replace inventory with the path to your host or group inventory file. Target gitlab host/group accordingly.
+
 ## 🧹 Cron Job: Auto-Prune GitLab Backups
 
 ### 🗑️ Cleanup Script: /usr/local/bin/cleanup_gitlab_backups.sh
