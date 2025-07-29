@@ -82,15 +82,16 @@ services:
         nginx['redirect_http_to_https'] = true
         gitlab_rails['gitlab_shell_ssh_port'] = 2224
         gitlab_rails['time_zone'] = 'Tehran'
+        gitlab_rails['backup_path'] = '/var/opt/gitlab/backups'
     ports:
       - '80:80'
       - '443:443'
       - '2224:22'
     volumes:
-      - './config:/etc/gitlab'
-      - './logs:/var/log/gitlab'
-      - './data:/var/opt/gitlab'
-      - './backups:/var/opt/gitlab/backups'
+      - '/srv/gitlab-docker/config:/etc/gitlab'
+      - '/srv/gitlab-docker/logs:/var/log/gitlab'
+      - '/srv/gitlab-docker/data:/var/opt/gitlab'
+      - '/srv/gitlab-docker/backups:/var/opt/gitlab/backups'
     networks:
       - gitlab-network    
 
