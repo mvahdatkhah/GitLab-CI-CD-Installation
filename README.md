@@ -300,6 +300,35 @@ sudo chmod +x /usr/local/bin/cleanup_gitlab_backups.sh
 (crontab -l; echo "0 3 * * * /usr/local/bin/cleanup_gitlab_backups.sh") | crontab -
 ```
 
+## 🏃 GitLab Runner Installation (Docker, Remote Host)
+
+### 1️⃣ Launch GitLab Runner Container
+```bash
+docker run -d --name gitlab-runner --restart always \
+  -v /srv/gitlab-runner/config:/etc/gitlab-runner \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:latest
+```
+
+### 2️⃣ Register the Runner
+Replace `https://gitlab.example.com` with your actual GitLab URL:
+```bash
+docker exec -it gitlab-runner gitlab-runner register
+```
+
+You’ll be prompted interactively:
+
+| Prompt               | Example                             |
+|----------------------|-------------------------------------|
+| GitLab instance URL  | https://gitlab.example.com          |
+| Registration token   | Found under Admin > CI/CD > Runners |
+| Description          | docker-remote-runner                |
+| Tags                 | docker,remote                       |
+| Executor             | docker                              |
+| Default image        | alpine:latest                       |
+
+
+Once registered, the runner will auto-connect to your GitLab instance and start executing jobs 🚀
 ## 🔐 HTTPS & Domain Setup
 
 - External URL: https://gitlab.example.com
