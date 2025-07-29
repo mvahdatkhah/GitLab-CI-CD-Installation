@@ -68,8 +68,7 @@ docker run hello-world
 ## 📝 Create `docker-compose.yml`
 
 ```yaml
-version: '3.8'
-
+---
 services:
   gitlab:
     image: gitlab/gitlab-ce:17.11.0-ce.0
@@ -100,7 +99,7 @@ services:
 networks:
   gitlab-network:
     driver: bridge
-
+...
 ```
 
 🔁 Replace `gitlab.local` with your server IP or FQDN.
