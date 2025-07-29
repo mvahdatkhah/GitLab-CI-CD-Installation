@@ -29,11 +29,34 @@ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-# Add your user to docker group (optional)
+## 🛠️ Docker Post-Installation Steps (Recommended)
+
+After installing Docker, apply these optional (but helpful) steps:
+
+### 1. Run Docker without `sudo`
+```bash
 sudo usermod -aG docker $USER
 newgrp docker
 ```
 
+Log out and back in, or reboot, to apply the group change.
+
+### 2. Configure Docker to start on boot
+```bash
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+```
+
+### 3. Test your Docker setup
+```bash
+docker run hello-world
+```
+
+If successful, Docker is correctly installed and usable by your user.
+
+More details: https://docs.docker.com/engine/install/linux-postinstall/
+
+---
 ---
 
 ## 📂 Project Structure
