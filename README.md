@@ -6,12 +6,12 @@
 
 Run everything as a non-root `sudo` user.
 
-### 1. Update the system
+### 🔄 1. Update the system
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2. Install Docker and Docker Compose
+### 🐳 2. Install Docker and Docker Compose
 ```bash
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common gnupg
 
@@ -28,26 +28,27 @@ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 # Install Docker Engine and Compose plugin
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
 
-## 🛠️ Docker Post-Installation Steps (Recommended)
+## ⚙️ Docker Post-Installation Steps (Recommended)
 
 After installing Docker, apply these optional (but helpful) steps:
 
-### 👤 Run Docker without `sudo`
+### 👤 1. Run Docker without `sudo`
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
 ```
 
-Log out and back in, or reboot, to apply the group change.
+🔁 Log out and back in, or reboot, to apply the group change.
 
-### 🔁 Configure Docker to start on boot
+### 🔁 2. Configure Docker to start on boot
 ```bash
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 ```
 
-### 🧪 Test your Docker setup
+### 🧪 3. Test your Docker setup
 ```bash
 docker run hello-world
 ```
