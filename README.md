@@ -56,9 +56,11 @@ docker run hello-world
 ## 📂 Project Structure
 
 ```bash
-gitlab-docker/
-├── docker-compose.yml
-└── README.md
+/srv/gitlab-docker/
+├── config     → GitLab configuration (/etc/gitlab)
+├── data       → Persistent data (/var/opt/gitlab)
+├── logs       → Logs mounted from LVM (/var/log/gitlab)
+└── backups    → Backups mounted from LVM (/var/opt/gitlab/backups)
 ```
 
 ---
@@ -213,12 +215,12 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 
 ### 🧱 1. Create a physical volume
 ```bash
-sudo pvcreate /dev/sbd
+sudo pvcreate /dev/sdb
 ```
 
 ### 🧩 2. Create a volume group
 ```bash
-sudo vgcreate gitlab-vg /dev/sbd
+sudo vgcreate gitlab-vg /dev/sdb
 ```
 
 ### 📦 3. Create logical volumes
@@ -238,8 +240,7 @@ sudo mkfs.ext4 /dev/gitlab-vg/gitlab-logs
 sudo mkfs.ext4 /dev/gitlab-vg/gitlab-backups
 
 # Create mount points
-sudo mkdir -p /mnt/gitlab/logs
-sudo mkdir -p /mnt/gitlab/backups
+sudo mkdir -p /mnt/gitlab/{logs,backups}
 
 # Mount the volumes
 sudo mount /dev/gitlab-vg/gitlab-logs /mnt/gitlab/logs
@@ -276,15 +277,17 @@ echo '/mnt/gitlab/backups /srv/gitlab-docker/backups none bind 0 0' | sudo tee -
 ### 🗑️ Cleanup Script: /usr/local/bin/cleanup_gitlab_backups.sh
 
 ```bash
+cat << 'EOF' | sudo tee /usr/local/bin/cleanup_gitlab_backups.sh
 #!/bin/bash
 BACKUP_DIR="/srv/gitlab-docker/backups"
 MAX_BACKUPS=11
 
 cd "$BACKUP_DIR" || exit 1
 ls -1tr *.tar | head -n -$MAX_BACKUPS | while read -r oldfile; do
-    echo "Removing $oldfile"
-    rm -f "$oldfile"
+  echo "Removing $oldfile"
+  rm -f "$oldfile"
 done
+EOF
 ```
 
 Make it executable:
@@ -296,6 +299,13 @@ sudo chmod +x /usr/local/bin/cleanup_gitlab_backups.sh
 ```bash
 (crontab -l; echo "0 3 * * * /usr/local/bin/cleanup_gitlab_backups.sh") | crontab -
 ```
+
+## 🔐 HTTPS & Domain Setup
+
+- External URL: https://gitlab.example.com
+- Auto-renew via Let's Encrypt
+- HTTP redirected to HTTPS
+- SSH exposed on port 2224
 
 ## 📦 Notes
 
