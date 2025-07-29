@@ -53,7 +53,7 @@ version: '3.8'
 
 services:
   gitlab:
-    image: gitlab/gitlab-ce:latest
+    image: gitlab/gitlab-ce:17.11.0-ce.0
     container_name: gitlab
     restart: always
     hostname: 'gitlab.example.com'
