@@ -186,9 +186,3 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 - GitLab Runner can be added via Docker
 
 ---
-
-##  Optional: GitLab Runner via Docker
-
-Let me know if you want to install a GitLab Runner linked to this instance.
-
----
