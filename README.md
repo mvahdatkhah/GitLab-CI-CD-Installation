@@ -77,6 +77,10 @@ services:
     networks:
       - gitlab-network    
 
+networks:
+  gitlab-network:
+    driver: bridge
+
 ```
 
 Replace `gitlab.local` with your server IP or FQDN.
