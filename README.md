@@ -1,8 +1,8 @@
-# 🦊 GitLab CI/CD Installation via Docker Compose (Ubuntu 24.04)
+#  GitLab CI/CD Installation via Docker Compose (Ubuntu 24.04)
 
 ---
 
-## ✅ Prerequisites
+##  Prerequisites
 
 Run everything as a non-root `sudo` user.
 
@@ -29,7 +29,7 @@ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-## 🛠️ Docker Post-Installation Steps (Recommended)
+##  Docker Post-Installation Steps (Recommended)
 
 After installing Docker, apply these optional (but helpful) steps:
 
@@ -52,24 +52,17 @@ sudo systemctl enable containerd.service
 docker run hello-world
 ```
 
-If successful, Docker is correctly installed and usable by your user.
-
-More details: https://docs.docker.com/engine/install/linux-postinstall/
-
----
----
-
-## 📂 Project Structure
+##  Project Structure
 
 ```bash
 gitlab-docker/
-├── docker-compose.yml
-└── README.md
+ docker-compose.yml
+ README.md
 ```
 
 ---
 
-## 🧱 Create `docker-compose.yml`
+##  Create `docker-compose.yml`
 
 ```yaml
 version: '3.8'
@@ -110,14 +103,14 @@ Replace `gitlab.local` with your server IP or FQDN.
 
 ---
 
-## 🚀 Start GitLab
+##  Start GitLab
 
-### 📥 Pull GitLab Image
+###  Pull GitLab Image
 ```bash
 docker compose pull
 ```
 
-### 🚀 Start the container
+###  Start the container
 ```bash
 docker compose up -d
 ```
@@ -130,14 +123,14 @@ docker logs -f gitlab
 
 ---
 
-## 🔑 Access GitLab
+##  Access GitLab
 
 - Navigate to: `http://your-server-ip/`
 - First login will ask you to set the root password.
 
 ---
 
-## 🔐 Open Firewall Ports (with `iptables`)
+##  Open Firewall Ports (with `iptables`)
 
 ```bash
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT    # HTTP
@@ -157,9 +150,9 @@ sudo netfilter-persistent reload
 
 ---
 
-## 🔁 GitLab Backups
+##  GitLab Backups
 
-### 🗃️ Backup command
+###  Backup command
 
 Inside the container:
 
@@ -169,7 +162,7 @@ docker exec -it gitlab gitlab-rake gitlab:backup:create
 
 Backup files are saved in: `./backups/` (host) or `/var/opt/gitlab/backups` (container)
 
-### 🕑 Enable automatic daily backups at 2AM
+###  Enable automatic daily backups at 2AM
 
 ```bash
 docker exec -it gitlab bash
@@ -182,7 +175,7 @@ Add:
 0 2 * * * /opt/gitlab/bin/gitlab-rake gitlab:backup:create CRON=1
 ```
 
-### ⏳ Keep backups for 7 days
+###  Keep backups for 7 days
 
 Edit `./config/gitlab.rb` or inside container:
 
@@ -198,7 +191,7 @@ docker exec -it gitlab gitlab-ctl reconfigure
 
 ---
 
-## ♻️ Restore from Backup
+##  Restore from Backup
 
 1. Stop GitLab:
 ```bash
@@ -215,7 +208,7 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 
 ---
 
-## 📦 Notes
+##  Notes
 
 - GitLab config is stored in `./config`
 - All CI/CD features included
