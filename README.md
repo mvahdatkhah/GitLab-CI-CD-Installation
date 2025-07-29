@@ -327,14 +327,23 @@ You’ll be prompted interactively:
 | Executor             | docker                              |
 | Default image        | alpine:latest                       |
 
+## 🔽 Fill in prompts using:
+
+- 🌐 GitLab URL: `https://gitlab.example.com`
+- 🔑 Token: Grab from GitLab Admin UI
+- ⚙️ Executor: `docker`
+- 🐳 Image: `alpine:latest`
+
 
 Once registered, the runner will auto-connect to your GitLab instance and start executing jobs 🚀
+
 ## 🔐 HTTPS & Domain Setup
 
-- External URL: https://gitlab.example.com
-- Auto-renew via Let's Encrypt
-- HTTP redirected to HTTPS
-- SSH exposed on port 2224
+- 🌐 External URL: `https://gitlab.example.com`
+- 🔁 Auto-renew via Let's Encrypt
+- 🚦 HTTP redirected to HTTPS
+- 🛠️ SSH exposed on port `2224`
+
 
 ## 📦 Notes
 
