@@ -208,6 +208,94 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 
 ---
 
+## 💽 Step-by-Step Disk Setup with LVM
+
+### 🧱 1. Create a physical volume
+```bash
+sudo pvcreate /dev/sbd
+```
+
+### 🧩 2. Create a volume group
+```bash
+sudo vgcreate gitlab-vg /dev/sbd
+```
+
+### 📦 3. Create logical volumes
+
+```bash
+# 150GB for logs
+sudo lvcreate -L 150G -n gitlab-logs gitlab-vg
+
+# Remaining (~50GB) for backups
+sudo lvcreate -L 50G -n gitlab-backups gitlab-vg
+```
+
+### 📁 4. Format and mount
+
+```bash
+sudo mkfs.ext4 /dev/gitlab-vg/gitlab-logs
+sudo mkfs.ext4 /dev/gitlab-vg/gitlab-backups
+
+# Create mount points
+sudo mkdir -p /mnt/gitlab/logs
+sudo mkdir -p /mnt/gitlab/backups
+
+# Mount the volumes
+sudo mount /dev/gitlab-vg/gitlab-logs /mnt/gitlab/logs
+sudo mount /dev/gitlab-vg/gitlab-backups /mnt/gitlab/backups
+```
+
+### 📝 5. Persist the mounts in `/etc/fstab`
+```bash
+echo '/dev/gitlab-vg/gitlab-logs /mnt/gitlab/logs ext4 defaults 0 2' | sudo tee -a /etc/fstab
+echo '/dev/gitlab-vg/gitlab-backups /mnt/gitlab/backups ext4 defaults 0 2' | sudo tee -a /etc/fstab
+```
+
+🔁 Then remount or reboot: `sudo mount -a`
+
+## 🔄 Bind-mount to Docker folders (optional)
+
+If GitLab uses `./logs` and `./backups` in your project root:
+
+```bash
+sudo mkdir -p /srv/gitlab-docker/logs /srv/gitlab-docker/backups
+sudo mount --bind /mnt/gitlab/logs /srv/gitlab-docker/logs
+sudo mount --bind /mnt/gitlab/backups /srv/gitlab-docker/backups
+```
+
+Make these persistent via `/etc/fstab`:
+
+```bash
+echo '/mnt/gitlab/logs /srv/gitlab-docker/logs none bind 0 0' | sudo tee -a /etc/fstab
+echo '/mnt/gitlab/backups /srv/gitlab-docker/backups none bind 0 0' | sudo tee -a /etc/fstab
+```
+
+## 🧹 Cron Job: Auto-Prune GitLab Backups
+
+### 🗑️ Cleanup Script: /usr/local/bin/cleanup_gitlab_backups.sh
+
+```bash
+#!/bin/bash
+BACKUP_DIR="/srv/gitlab-docker/backups"
+MAX_BACKUPS=11
+
+cd "$BACKUP_DIR" || exit 1
+ls -1tr *.tar | head -n -$MAX_BACKUPS | while read -r oldfile; do
+    echo "Removing $oldfile"
+    rm -f "$oldfile"
+done
+```
+
+Make it executable:
+```bash
+sudo chmod +x /usr/local/bin/cleanup_gitlab_backups.sh
+```
+
+### 📅 Add to cron (daily at 3AM)
+```bash
+(crontab -l; echo "0 3 * * * /usr/local/bin/cleanup_gitlab_backups.sh") | crontab -
+```
+
 ## 📦 Notes
 
 - ⚙️ GitLab config is stored in `./config`
