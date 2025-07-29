@@ -30,7 +30,7 @@ sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 ```
 
-## ⚙️ Docker Post-Installation Steps (Recommended)
+## ⚙️ 3. Docker Post-Installation Steps (Recommended)
 
 After installing Docker, apply these optional (but helpful) steps:
 
