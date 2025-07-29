@@ -74,6 +74,8 @@ services:
       - './logs:/var/log/gitlab'
       - './data:/var/opt/gitlab'
       - './backups:/var/opt/gitlab/backups'
+    networks:
+      - gitlab-network    
 
 ```
 
