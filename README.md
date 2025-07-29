@@ -316,6 +316,35 @@ Replace `https://gitlab.example.com` with your actual GitLab URL:
 docker exec -it gitlab-runner gitlab-runner register
 ```
 
+## 🏃 GitLab Runner via Docker Compose (Remote Server)
+### 1️⃣ 📁 Directory Setup
+
+Create a dedicated folder to hold your docker-compose.yml and config:
+
+```bash
+mkdir -p /srv/gitlab-runner/config
+cd /srv/gitlab-runner
+```
+
+### 2️⃣ 📝 Create docker-compose.yml
+```bash
+services:
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    volumes:
+      - ./config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+```
+
+This setup enables Docker-in-Docker for CI builds and stores config persistently.
+
+### 🔐 Register the Runner
+```bash
+docker exec -it gitlab-runner gitlab-runner register
+```
+
 ## 🔽 Fill in prompts using:
 
 - 🌐 GitLab URL: `https://gitlab.example.com`
@@ -325,16 +354,16 @@ docker exec -it gitlab-runner gitlab-runner register
 
 You’ll be prompted interactively:
 
-| Prompt               | Example                             |
-|----------------------|-------------------------------------|
-| GitLab instance URL  | https://gitlab.example.com          |
-| Registration token   | Found under Admin > CI/CD > Runners |
-| Description          | docker-remote-runner                |
-| Tags                 | docker,remote                       |
-| Executor             | docker                              |
-| Default image        | alpine:latest                       |
+| Prompt               | Example                                |
+|----------------------|----------------------------------------|
+| GitLab instance URL  | https://gitlab.example.com             |
+| Registration token   |  Get this from Admin > CI/CD > Runners |
+| Description          | docker-remote-runner                   |
+| Tags                 | docker,remote                          |
+| Executor             | docker                                 |
+| Default image        | alpine:latest                          |
 
-Once registered, the runner will auto-connect to your GitLab instance and start executing jobs 🚀
+💡 After registration, the runner will automatically connect to your GitLab instance and start handling CI jobs.
 
 ## 🔐 HTTPS & Domain Setup
 
