@@ -1,8 +1,8 @@
-#  GitLab CI/CD Installation via Docker Compose (Ubuntu 24.04)
+# 🦊 GitLab CI/CD Installation via Docker Compose (Ubuntu 24.04)
 
 ---
 
-##  Prerequisites
+## ✅ Prerequisites
 
 Run everything as a non-root `sudo` user.
 
@@ -29,11 +29,11 @@ sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-##  Docker Post-Installation Steps (Recommended)
+## 🛠️ Docker Post-Installation Steps (Recommended)
 
 After installing Docker, apply these optional (but helpful) steps:
 
-### 1. Run Docker without `sudo`
+### 👤 Run Docker without `sudo`
 ```bash
 sudo usermod -aG docker $USER
 newgrp docker
@@ -41,28 +41,28 @@ newgrp docker
 
 Log out and back in, or reboot, to apply the group change.
 
-### 2. Configure Docker to start on boot
+### 🔁 Configure Docker to start on boot
 ```bash
 sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 ```
 
-### 3. Test your Docker setup
+### 🧪 Test your Docker setup
 ```bash
 docker run hello-world
 ```
 
-##  Project Structure
+## 📂 Project Structure
 
 ```bash
 gitlab-docker/
- docker-compose.yml
- README.md
+├── docker-compose.yml
+└── README.md
 ```
 
 ---
 
-##  Create `docker-compose.yml`
+## 📝 Create `docker-compose.yml`
 
 ```yaml
 version: '3.8'
@@ -99,23 +99,23 @@ networks:
 
 ```
 
-Replace `gitlab.local` with your server IP or FQDN.
+🔁 Replace `gitlab.local` with your server IP or FQDN.
 
 ---
 
-##  Start GitLab
+## 🏗️ Start GitLab
 
-###  Pull GitLab Image
+### 📥 Pull GitLab Image
 ```bash
 docker compose pull
 ```
 
-###  Start the container
+### ▶️ Start the container
 ```bash
 docker compose up -d
 ```
 
-Monitor logs with:
+### 📡 Monitor logs with:
 
 ```bash
 docker logs -f gitlab
@@ -123,14 +123,14 @@ docker logs -f gitlab
 
 ---
 
-##  Access GitLab
+## 🌐 Access GitLab
 
 - Navigate to: `http://your-server-ip/`
-- First login will ask you to set the root password.
+- 🔐 First login will ask you to set the root password.
 
 ---
 
-##  Open Firewall Ports (with `iptables`)
+## 🔐 Open Firewall Ports (with `iptables`)
 
 ```bash
 sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT    # HTTP
@@ -140,7 +140,7 @@ sudo iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 sudo iptables -A INPUT -i lo -j ACCEPT
 ```
 
-### Save iptables rules across reboots:
+### 💾 Save iptables rules across reboots:
 
 ```bash
 sudo apt install iptables-persistent
@@ -150,19 +150,18 @@ sudo netfilter-persistent reload
 
 ---
 
-##  GitLab Backups
+## 🗂️ GitLab Backups
 
-###  Backup command
+### 💡 Backup command (inside the container):
 
 Inside the container:
 
 ```bash
 docker exec -it gitlab gitlab-rake gitlab:backup:create
 ```
+🗃️ Files saved to: `./backups/` (host) or `/var/opt/gitlab/backups` (container)
 
-Backup files are saved in: `./backups/` (host) or `/var/opt/gitlab/backups` (container)
-
-###  Enable automatic daily backups at 2AM
+### ⏰ Enable automatic daily backups at 2AM
 
 ```bash
 docker exec -it gitlab bash
@@ -175,7 +174,7 @@ Add:
 0 2 * * * /opt/gitlab/bin/gitlab-rake gitlab:backup:create CRON=1
 ```
 
-###  Keep backups for 7 days
+### 🧼 Keep backups for 7 days
 
 Edit `./config/gitlab.rb` or inside container:
 
@@ -191,16 +190,16 @@ docker exec -it gitlab gitlab-ctl reconfigure
 
 ---
 
-##  Restore from Backup
+## ♻️ Restore from Backup
 
-1. Stop GitLab:
+1️⃣ Stop GitLab:
 ```bash
 docker compose down
 ```
 
-2. Copy your backup file into `./backups/`
+2️⃣ Copy your backup file into ./backups/
 
-3. Restore:
+3️⃣ Restore:
 ```bash
 docker compose up -d
 docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
@@ -208,11 +207,11 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 
 ---
 
-##  Notes
+## 📦 Notes
 
-- GitLab config is stored in `./config`
-- All CI/CD features included
-- HTTPS can be added later
-- GitLab Runner can be added via Docker
+- ⚙️ GitLab config is stored in `./config`
+- ✅ All CI/CD features included
+- 🔐 HTTPS can be added later
+- 🏃 GitLab Runner can be added via Docker
 
 ---
