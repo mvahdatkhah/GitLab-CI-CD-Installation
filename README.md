@@ -316,6 +316,26 @@ Replace `https://gitlab.example.com` with your actual GitLab URL:
 docker exec -it gitlab-runner gitlab-runner register
 ```
 
+## 🔽 Fill in prompts using:
+
+- 🌐 GitLab URL: `https://gitlab.example.com`
+- 🔑 Token: Grab from GitLab Admin UI
+- ⚙️ Executor: `docker`
+- 🐳 Image: `alpine:latest`
+
+You’ll be prompted interactively:
+
+| Prompt               | Example                                |
+|----------------------|----------------------------------------|
+| GitLab instance URL  | https://gitlab.example.com             |
+| Registration token   |  Get this from Admin > CI/CD > Runners |
+| Description          | docker-remote-runner                   |
+| Tags                 | docker,remote                          |
+| Executor             | docker                                 |
+| Default image        | alpine:latest                          |
+
+Once registered, the runner will auto-connect to your GitLab instance and start executing jobs 🚀
+
 ## 🏃 GitLab Runner via Docker Compose (Remote Server)
 ### 1️⃣ 📁 Directory Setup
 
