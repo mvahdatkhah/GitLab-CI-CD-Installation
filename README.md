@@ -392,7 +392,7 @@ Run the playbook from your Ansible control node:
 ansible-playbook -i inventory setup-lvm.yml
 ```
 
-Replace inventory with the path to your host or group inventory file. Target gitlab host/group accordingly.
+Replace `inventory` with the path to your host or group inventory file. Target gitlab host/group accordingly.
 
 ## 🧹 Cron Job: Auto-Prune GitLab Backups
 
