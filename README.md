@@ -89,11 +89,17 @@ Replace `gitlab.local` with your server IP or FQDN.
 
 ## 🚀 Start GitLab
 
+### 📥 Pull GitLab Image
+```bash
+docker compose pull
+```
+
+### 🚀 Start the container
 ```bash
 docker compose up -d
 ```
 
-This will take a few minutes. You can monitor with:
+Monitor logs with:
 
 ```bash
 docker logs -f gitlab
