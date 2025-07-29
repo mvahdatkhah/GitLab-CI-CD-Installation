@@ -383,6 +383,7 @@ echo '/mnt/gitlab/backups /srv/gitlab-docker/backups none bind 0 0' | sudo tee -
         fstype: "{{ filesystem_type }}"
         opts: defaults
         state: present
+...        
 ```
 
 ### 🛠️ Usage
