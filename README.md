@@ -200,7 +200,7 @@ docker exec -it gitlab gitlab-ctl reconfigure
 docker compose down
 ```
 
-2️⃣ Copy your backup file into ./backups/
+2️⃣ Copy your backup file into `./backups/`
 
 3️⃣ Restore:
 ```bash
@@ -210,7 +210,7 @@ docker exec -it gitlab gitlab-backup restore BACKUP=timestamp
 
 ---
 
-## 💽 Step-by-Step Disk Setup with LVM
+## 💽 Disk Setup with LVM
 
 ### 🧱 1. Create a physical volume
 ```bash
